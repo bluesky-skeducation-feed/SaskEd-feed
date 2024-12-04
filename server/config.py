@@ -16,3 +16,7 @@ if SASK_FEED_URI is None:
         "Publish your feed first (run publish_feed.py) to obtain Feed URI. "
         'Set this URI to "SASK_FEED_URI" environment variable.'
     )
+
+BSKY_HANDLE = os.environ.get("BSKY_HANDLE")
+BSKY_APP_PASSWORD = os.environ.get("BSKY_APP_PASSWORD")
+AUTHORIZED_LIST_URI = os.environ.get("AUTHORIZED_LIST_URI")

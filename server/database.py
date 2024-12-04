@@ -1,48 +1,47 @@
-import os
-import peewee
 from datetime import datetime
+import os
+from peewee import *
 from urllib.parse import urlparse
 
-# Get database URL from environment variable
+# Debug prints
+print("Starting database initialization...")
+print(f"Environment variables: {list(os.environ.keys())}")
 DATABASE_URL = os.getenv('DATABASE_URL')
-db = None
+print(f"DATABASE_URL found: {'Yes' if DATABASE_URL else 'No'}")
 
-
-# Parse the DATABASE_URL and connect
+# Initialize database
 if DATABASE_URL:
-    url = urlparse(DATABASE_URL)
-    db.init(
-        database=url.path[1:],
-        user=url.username,
-        password=url.password,
-        host=url.hostname,
-        port=url.port
-    )
+    print("Found DATABASE_URL, initializing PostgreSQL...")
+    try:
+        url = urlparse(DATABASE_URL)
+        print(f"Parsed URL - host: {url.hostname}")
+        db = PostgresqlDatabase(
+            database=url.path[1:],
+            user=url.username,
+            password='[HIDDEN]',  # Don't log the actual password
+            host=url.hostname,
+            port=url.port,
+            autorollback=True
+        )
+        print("PostgreSQL database initialized")
+    except Exception as e:
+        print(f"Error initializing PostgreSQL: {e}")
+        raise e
 else:
-    db = peewee.SqliteDatabase('feed_database.db')
+    print("No DATABASE_URL found, using SQLite")
+    db = SqliteDatabase('feed_database.db')
 
-
-class BaseModel(peewee.Model):
+class BaseModel(Model):
     class Meta:
         database = db
-
-
-class Subscriber(BaseModel):
-    did = peewee.CharField(unique=True)  # The user's DID
-    subscribed_at = peewee.DateTimeField(default=datetime.now)
-
-    class Meta:
-        database = db
-
 
 class Post(BaseModel):
-    uri = peewee.CharField(index=True)
-    cid = peewee.CharField()
-    reply_parent = peewee.CharField(null=True, default=None)
-    reply_root = peewee.CharField(null=True, default=None)
-    indexed_at = peewee.DateTimeField(default=datetime.timezone.utc)
-
+    uri = CharField(index=True)
+    cid = CharField()
+    reply_parent = CharField(null=True, default=None)
+    reply_root = CharField(null=True, default=None)
+    indexed_at = DateTimeField(default=datetime.timezone.utc)
 
 class SubscriptionState(BaseModel):
-    service = peewee.CharField(unique=True)
-    cursor = peewee.BigIntegerField()
+    service = CharField(unique=True)
+    cursor = BigIntegerField()

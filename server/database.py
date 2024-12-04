@@ -1,16 +1,15 @@
 import os
 import peewee
 from datetime import datetime
+from urllib.parse import urlparse
 
 # Get database URL from environment variable
 DATABASE_URL = os.getenv('DATABASE_URL')
+db = None
 
-# Create PostgreSQL database instance
-db = peewee.PostgresqlDatabase(None)
 
 # Parse the DATABASE_URL and connect
 if DATABASE_URL:
-    from urllib.parse import urlparse
     url = urlparse(DATABASE_URL)
     db.init(
         database=url.path[1:],
@@ -19,6 +18,8 @@ if DATABASE_URL:
         host=url.hostname,
         port=url.port
     )
+else:
+    db = peewee.SqliteDatabase('feed_database.db')
 
 
 class BaseModel(peewee.Model):
@@ -39,14 +40,9 @@ class Post(BaseModel):
     cid = peewee.CharField()
     reply_parent = peewee.CharField(null=True, default=None)
     reply_root = peewee.CharField(null=True, default=None)
-    indexed_at = peewee.DateTimeField(default=datetime.utcnow)
+    indexed_at = peewee.DateTimeField(default=datetime.timezone.utc)
 
 
 class SubscriptionState(BaseModel):
     service = peewee.CharField(unique=True)
     cursor = peewee.BigIntegerField()
-
-
-if db.is_closed():
-    db.connect()
-    db.create_tables([Post, SubscriptionState, Subscriber])

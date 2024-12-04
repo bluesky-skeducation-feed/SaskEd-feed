@@ -35,6 +35,10 @@ class BaseModel(Model):
     class Meta:
         database = db
 
+class Subscriber(BaseModel):
+    did = CharField(unique=True)
+    subscribed_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
+
 class Post(BaseModel):
     uri = CharField(index=True)
     cid = CharField()

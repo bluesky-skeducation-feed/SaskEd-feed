@@ -1,5 +1,5 @@
-from . import whats_alf
+from . import sask_ed
 
 algos = {
-    whats_alf.uri: whats_alf.handler
+    sask_ed.uri: sask_ed.handler
 }

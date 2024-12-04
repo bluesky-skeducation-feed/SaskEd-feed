@@ -10,6 +10,14 @@ class BaseModel(peewee.Model):
         database = db
 
 
+class Subscriber(BaseModel):
+    did = peewee.CharField(unique=True)  # The user's DID
+    subscribed_at = peewee.DateTimeField(default=datetime.now)
+
+    class Meta:
+        database = db
+
+
 class Post(BaseModel):
     uri = peewee.CharField(index=True)
     cid = peewee.CharField()
@@ -25,4 +33,4 @@ class SubscriptionState(BaseModel):
 
 if db.is_closed():
     db.connect()
-    db.create_tables([Post, SubscriptionState])
+    db.create_tables([Post, SubscriptionState, Subscriber])

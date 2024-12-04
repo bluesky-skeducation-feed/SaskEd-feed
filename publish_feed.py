@@ -6,15 +6,15 @@ from atproto import Client, models
 
 # YOUR bluesky handle
 # Ex: user.bsky.social
-HANDLE: str = ''
+HANDLE: str = 'sask-ed-feed.bsky.social'
 
 # YOUR bluesky password, or preferably an App Password (found in your client settings)
 # Ex: abcd-1234-efgh-5678
-PASSWORD: str = ''
+PASSWORD: str = 'mtk5-xgkn-zex5-u2wj'
 
 # The hostname of the server where feed server will be hosted
 # Ex: feed.bsky.dev
-HOSTNAME: str = ''
+HOSTNAME: str = 'railway.app'
 
 # A short name for the record that will show in urls
 # Lowercase with no spaces.

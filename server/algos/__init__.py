@@ -1,21 +1,27 @@
 from typing import Optional
 from server.database import Post
+from server.logger import logger
 
 def get_feed(cursor: Optional[str] = None, limit: int = 20):
+    logger.info(f"Feed request - cursor: {cursor}, limit: {limit}")
+    
     try:
         query = Post.select().order_by(Post.indexed_at.desc())
-        
         if cursor:
             query = query.where(Post.indexed_at < cursor)
-            
-        posts = list(query.limit(limit))
         
-        return {
+        posts = list(query.limit(limit))
+        logger.info(f"Found {len(posts)} posts")
+        
+        response = {
             'cursor': posts[-1].indexed_at.isoformat() if posts else None,
             'feed': [{'post': post.uri} for post in posts] if posts else []
         }
+        logger.info(f"Returning response: {response}")
+        return response
+        
     except Exception as e:
-        print(f"Error in get_feed: {e}")
+        logger.error(f"Feed error: {e}")
         return {'cursor': None, 'feed': []}
 
 algos = {

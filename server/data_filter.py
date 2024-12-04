@@ -3,20 +3,38 @@ from atproto import models, Client
 from server.logger import logger
 from server.database import db, Post
 from server import config
+from datetime import datetime, timedelta
 
 # Initialize client
 client = Client()
 client.login(config.BSKY_HANDLE, config.BSKY_APP_PASSWORD)
 
+# Cache for list members
+_list_members_cache = {
+    'members': [],
+    'last_updated': None
+}
 
 def get_list_members():
-    """Get the current members of the authorized list"""
-    try:
-        response = client.app.bsky.graph.get_list({"list": config.AUTHORIZED_LIST_URI})
-        return [item.subject.did for item in response.items]
-    except Exception as e:
-        logger.error(f"Error fetching list members: {e}")
-        return []
+    """Get the current members of the authorized list with caching"""
+    global _list_members_cache
+    
+    # Only fetch new list if cache is empty or older than 5 minutes
+    now = datetime.now()
+    if (_list_members_cache['last_updated'] is None or 
+        now - _list_members_cache['last_updated'] > timedelta(minutes=5)):
+        try:
+            response = client.app.bsky.graph.get_list({'list': config.AUTHORIZED_LIST_URI})
+            _list_members_cache['members'] = [item.subject.did for item in response.items]
+            _list_members_cache['last_updated'] = now
+            logger.info(f"Updated list members cache, found {len(_list_members_cache['members'])} members")
+        except Exception as e:
+            logger.error(f"Error fetching list members: {e}")
+            # If there's an error, use cached members if available
+            if not _list_members_cache['members']:
+                return []
+    
+    return _list_members_cache['members']
 
 
 def operations_callback(ops: defaultdict) -> None:

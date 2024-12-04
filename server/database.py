@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from peewee import *
 from urllib.parse import urlparse
@@ -40,7 +40,7 @@ class Post(BaseModel):
     cid = CharField()
     reply_parent = CharField(null=True, default=None)
     reply_root = CharField(null=True, default=None)
-    indexed_at = DateTimeField(default=datetime.timezone.utc)
+    indexed_at = DateTimeField(default=lambda: datetime.now(timezone.utc))
 
 class SubscriptionState(BaseModel):
     service = CharField(unique=True)

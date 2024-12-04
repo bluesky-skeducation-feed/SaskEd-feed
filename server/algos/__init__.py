@@ -4,24 +4,18 @@ from server.logger import logger
 
 def get_feed(cursor: Optional[str] = None, limit: int = 20):
     logger.info(f"Feed request - cursor: {cursor}, limit: {limit}")
-    
     try:
         query = Post.select().order_by(Post.indexed_at.desc())
-        if cursor:
-            query = query.where(Post.indexed_at < cursor)
+        posts = list(query)
+        logger.info(f"Raw posts from database: {posts}")
+        logger.info(f"Number of posts found: {len(posts)}")
         
-        posts = list(query.limit(limit))
-        logger.info(f"Found {len(posts)} posts")
-        
-        response = {
-            'cursor': posts[-1].indexed_at.isoformat() if posts else None,
-            'feed': [{'post': post.uri} for post in posts] if posts else []
-        }
-        logger.info(f"Returning response: {response}")
+        response = {'cursor': None, 'feed': []}
+        logger.info(f"Response structure: {response}")
         return response
-        
     except Exception as e:
         logger.error(f"Feed error: {e}")
+        logger.error(f"Exception details: {str(e)}")
         return {'cursor': None, 'feed': []}
 
 algos = {

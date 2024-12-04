@@ -1,12 +1,12 @@
 import os
-from peewee import *
+import peewee
 from datetime import datetime
 
 # Get database URL from environment variable
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 # Create PostgreSQL database instance
-db = PostgresqlDatabase(None)
+db = peewee.PostgresqlDatabase(None)
 
 # Parse the DATABASE_URL and connect
 if DATABASE_URL:

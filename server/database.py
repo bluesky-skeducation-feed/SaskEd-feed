@@ -1,28 +1,22 @@
 from datetime import datetime, timezone
 import os
 from peewee import *
-from urllib.parse import urlparse
 
 # Debug prints
 print("Starting database initialization...")
-print(f"Environment variables: {list(os.environ.keys())}")
 DATABASE_URL = os.getenv('DATABASE_URL')
 print(f"DATABASE_URL found: {'Yes' if DATABASE_URL else 'No'}")
 
-# Initialize database
+# Initialize database using direct connection string
 if DATABASE_URL:
     print("Found DATABASE_URL, initializing PostgreSQL...")
     try:
-        url = urlparse(DATABASE_URL)
-        print(f"Parsed URL - host: {url.hostname}")
-        db = PostgresqlDatabase(
-            database=url.path[1:],
-            user=url.username,
-            password='[HIDDEN]',  # Don't log the actual password
-            host=url.hostname,
-            port=url.port,
-            autorollback=True
-        )
+        # Replace postgres:// with postgresql://
+        if DATABASE_URL.startswith('postgres://'):
+            DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+            
+        db = PostgresqlDatabase(None)
+        db.init(DATABASE_URL)
         print("PostgreSQL database initialized")
     except Exception as e:
         print(f"Error initializing PostgreSQL: {e}")

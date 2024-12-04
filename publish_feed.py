@@ -14,20 +14,26 @@ PASSWORD: str = 'mtk5-xgkn-zex5-u2wj'
 
 # The hostname of the server where feed server will be hosted
 # Ex: feed.bsky.dev
-HOSTNAME: str = 'railway.app'
+HOSTNAME: str = 'sasked-feed-production.up.railway.app'
 
 # A short name for the record that will show in urls
 # Lowercase with no spaces.
 # Ex: whats-hot
-RECORD_NAME: str = ''
+RECORD_NAME: str = 'sask-ed-feed'
 
 # A display name for your feed
 # Ex: What's Hot
-DISPLAY_NAME: str = ''
+DISPLAY_NAME: str = "Sask Ed Chat Feed"
 
 # (Optional) A description of your feed
 # Ex: Top trending content from the whole network
-DESCRIPTION: str = 'powered by The AT Protocol SDK for Python'
+DESCRIPTION: str = """A feed for Saskatchewan Educators.
+For your post to appear, you must:
+- be a member of sask-ed-feed.bsky.social's list Sask Educators
+- use the tags #SaskEdChat or #SaskEd
+
+To be added to the Sask Educators list, please contact @jannymarie.com
+"""
 
 # (Optional) The path to an image to be used as your feed's avatar
 # Ex: ./path/to/avatar.jpeg

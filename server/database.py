@@ -1,8 +1,24 @@
+import os
+from peewee import *
 from datetime import datetime
 
-import peewee
+# Get database URL from environment variable
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-db = peewee.SqliteDatabase('feed_database.db')
+# Create PostgreSQL database instance
+db = PostgresqlDatabase(None)
+
+# Parse the DATABASE_URL and connect
+if DATABASE_URL:
+    from urllib.parse import urlparse
+    url = urlparse(DATABASE_URL)
+    db.init(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
 
 
 class BaseModel(peewee.Model):
